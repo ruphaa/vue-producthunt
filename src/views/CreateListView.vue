@@ -29,7 +29,6 @@ export default {
     data() {
         return {
             posts: [],
-            authString: 'Bearer 1cdf427545c4ee4ca4577ea1b3cec0fab9bd921c87c4a3f41703ffaf1b300862',
             urls: {
                 popular: "https://api.producthunt.com/v1/posts/all?sort_by=votes_count&order=desc&search[featured_month]=3&search[featured_year]=2019&per_page=12&page=1",
                 previous: "https://api.producthunt.com/v1/posts?days_ago=1&per_page=12&page=1",
