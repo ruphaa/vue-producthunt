@@ -54,6 +54,7 @@ export default {
         },
         signout() {
             this.$store.dispatch('signout');
+            this.$router.push('/');
         },
         signup() {
             this.signupDialog = !(this.signupDialog);

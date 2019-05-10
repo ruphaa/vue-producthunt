@@ -75,11 +75,9 @@ export default {
     },
     methods: {
       openModal: function(dialog) {
-        console.log(dialog)
         this.dialog = dialog;
       },
       signup: function() {
-        console.log("make a call to firebase", this.email, this.password)
         let email = this.email;
         let password = this.password;
         this.$store.dispatch('signup', {email, password})

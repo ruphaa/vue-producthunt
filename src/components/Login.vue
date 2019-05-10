@@ -25,12 +25,12 @@
             </v-layout>
           </v-container>
           <small>*indicates required field</small>
-        <p>You don't have an account ? Create an account</p>
+        <p>You don't have an account ? <a @click.prevent="openSignup()">Create an account</a></p>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="red accent-2" flat @click="dialog = false">Close</v-btn>
-          <v-btn color="red accent-2" flat @click="login()">Save</v-btn>
+          <v-btn color="red accent-2" flat @click.stop.prevent="login()">Save</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -52,7 +52,8 @@ export default {
     data: () => ({
       dialog: false,
       email: "",
-      password: ""
+      password: "",
+      signupDialog: false
     }),
     computed: {
       emailErrors () {
@@ -75,19 +76,38 @@ export default {
       this.$eventHub.$off('open-modal')
     },
     methods: {
-      openModal: function(dialog) {
-        console.log(dialog)
-        this.dialog = dialog;
-      },
-      login: function() {
-        console.log("make a call to firebase", this.email, this.password)
-        let email = this.email;
-        let password = this.password;
-        this.$store.dispatch('login', {email, password})
-        this.dialog = !this.dialog;
+      closeModal: function() {
+        this.dialog = false;
         this.$v.$reset()
         this.email = ''
         this.password = ''
+      },  
+      openModal: function(dialog) {
+        this.dialog = dialog;
+      },
+      login: function() {
+        let email = this.email;
+        let password = this.password;
+        this.$store.dispatch('login', {email, password})
+          .then(data => {
+            this.dialog = !this.dialog;
+            this.$v.$reset()
+            this.email = ''
+            this.password = ''
+          })
+          .catch(err => {
+            console.log('Err', err)
+          })
+        
+      },
+      openSignup: function() {
+        this.$v.$reset()
+        this.email = ''
+        this.password = ''
+        this.dialog = false;
+        this.signupDialog = !(this.signupDialog);
+        if(this.signupDialog) this.$eventHub.$emit('open-signup-modal', this.signupDialog)
+        this.signupDialog = !(this.signupDialog);
       }
     }
     

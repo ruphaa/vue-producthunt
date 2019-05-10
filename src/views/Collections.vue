@@ -25,12 +25,17 @@ export default {
     },
     methods: {
         getBookmarks: function() {
-            this.$bind('collections', bookmarksCollection.get().then(documents => {
-                console.log(documents);
-            }));
+            let user = this.getUser;
+            this.posts = this.$store.getters.postsCollection;
+            this.loading = false;
+
+        },
+        checkIfUserExists: function() {
+            if(!this.getUser) this.$router.push('/');
         }
     },
     mounted() {
+        this.checkIfUserExists();
         this.getBookmarks();
     },
     data() {

@@ -1,4 +1,5 @@
 <template>
+    
     <div class="post" :key="post.id" :id="post.id">
         <!-- 
             id
@@ -9,7 +10,7 @@
                 External link
             Upvotes
             -->
-        <div class="post__image"><img v-bind:src="post.thumbnail.image_url" alt=""></div>
+        <div class="post__image"><img v-bind:src="(post.thumbnail && post.thumbnail.image_url) || (post.image_url)" alt=""></div>
         <div class="post__content">
             <h3 class="name"><a :href="post.discussion_url" target="_blank">{{ post.name }}</a></h3>
             <p class="tagline">{{ post.tagline }}</p>
@@ -18,8 +19,11 @@
                     <i class="fa fa-external-link"></i>
                 </a>
             </div>
-            <div class="bookmark" v-if="isAuthenticated">
-                <a href="#" @click.prevent="addToBookmark()">
+            <div class="bookmark" v-if="isAuthenticated && !($route.name == 'collections')">
+                <a href="javascript:void(0)" v-if="found" @click.prevent="removeFromBookmark()">
+                    <i class="fa fa-bookmark"></i>
+                </a>
+                <a href="#" @click.prevent="addToBookmark()" v-else>
                     <i class="fa fa-bookmark-o"></i>
                 </a>
             </div>
@@ -36,18 +40,32 @@ import { bookmarksCollection } from '../firebase.js'
 export default {
     name: 'item',
     props: ['post'],
+    data() {
+        return {
+            isFound: false
+        }
+    },
     computed: {
         isAuthenticated() {
             return this.$store.getters.authenticated;
         },
         getUser() {
             return this.$store.getters.user;
+        },
+        found() {
+            return this.isFound;
         }
+    },
+    mounted() {
+        this.postAlreadyExists();
+    },
+    updated() {
+        this.postAlreadyExists();
     },
     methods: {
         addToBookmark() {
             let user = this.getUser;
-            console.log(user.user.uid)
+            const $this = this;
             bookmarksCollection.add({
                 id: this.post.id,
                 image_url: this.post.thumbnail.image_url,
@@ -59,12 +77,45 @@ export default {
                 votes_count: this.post.votes_count
             })
             .then(function(docRef) {
-                console.log('Document--->', docRef.id)
+                $this.$store.dispatch('fetchUserCollection', {user})
+                    .then(data => {
+                        $this.isFound = true;
+                        alert('Added to collection successfully')
+                    })
+                    .catch(err => {
+                        console.log('Error', err)
+                    })
             })
             .catch(function(error) {
                 console.log('Error---->', error)
             });
-            console.log(this.post)
+        },
+        removeFromBookmark() {
+            let user = this.getUser;
+            const $this = this;
+            bookmarksCollection.get().then((querySnapshot) => {
+                let posts = [];
+                querySnapshot.forEach((doc) => {
+                    let data = doc.data();
+                    if((data.user_id == user.user.uid) && (data.id == this.post.id)) {
+                        doc.ref.delete();
+                    }
+                });
+                $this.$store.dispatch('fetchUserCollection', {user})
+                    .then(data => {
+                        $this.isFound = false;
+                        alert('Deleted from the collection successfully')
+                    })
+                    .catch(err => {
+                        console.log('Error', err)
+                    })
+            })
+            .catch(err => {
+                console.log("Error getting document", err)
+            });
+        },
+        postAlreadyExists() {
+            this.isFound = this.$store.getters.postsCollection.some(post => post.id == this.post.id)
         }
     }
 };
