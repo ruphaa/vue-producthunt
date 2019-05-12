@@ -3,10 +3,10 @@ import './plugins/vuetify';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-import firebase from 'firebase';
 import Vuelidate from 'vuelidate';
 import VueFire from 'vuefire';
 import './firebase';
+
 
 Vue.config.productionTip = false;
 Vue.prototype.$eventHub = new Vue();

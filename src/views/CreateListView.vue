@@ -29,6 +29,7 @@ export default {
     data() {
         return {
             posts: [],
+            authString: process.env.VUE_APP_AUTHSTRING,
             urls: {
                 popular: "https://api.producthunt.com/v1/posts/all?sort_by=votes_count&order=desc&search[featured_month]=3&search[featured_year]=2019&per_page=12&page=1",
                 previous: "https://api.producthunt.com/v1/posts?days_ago=1&per_page=12&page=1",
