@@ -1,5 +1,8 @@
 # vue-producthunt
 
+## Description
+This is a Product Hunt Clone built upon Product hunt API and Vue + Firebase + Vue Router + Vuex
+
 ## Project setup
 ```
 npm install
